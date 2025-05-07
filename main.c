@@ -13,6 +13,7 @@ int main() {
 		HEIGHT,
 		SDL_WINDOW_SHOWN
 	);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
 	SDL_Event e;
 	while (1) {
@@ -22,6 +23,7 @@ int main() {
 		}
 	}
 
+	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	return 0;
