@@ -5,6 +5,9 @@
 #define HEIGHT 480
 #define MAP_WIDTH 10
 #define MAP_HEIGHT 10
+#define TILE_SIZE 32
+#define FOV 60
+#define NUM_RAYS 512
 
 typedef struct {
 	double x, y;
@@ -54,9 +57,26 @@ void init() {
 	);
 }
 
+void draw_2d_map() {
+	for (int y = 0; y < MAP_HEIGHT; y++) {
+		for (int x = 0; x < MAP_WIDTH; x++) {
+			if (map[y][x] == 1) {
+				SDL_SetRenderDrawColor(renderer, 0, 255, 255, SDL_ALPHA_OPAQUE);
+			} else {
+				SDL_SetRenderDrawColor(renderer, 255, 0, 255, SDL_ALPHA_OPAQUE);
+			}
+			SDL_RenderDrawPoint(renderer, x * TILE_SIZE, y * TILE_SIZE);
+		}
+	}
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawPoint(renderer, player->x / WIDTH * TILE_SIZE * MAP_WIDTH, player->y / HEIGHT * TILE_SIZE * MAP_HEIGHT);
+}
+
 void draw() {
-	/* SDL_RenderClear(renderer); */
-	SDL_RenderDrawPoint(renderer, WIDTH / 2, HEIGHT / 2);
+	draw_2d_map();
+	for (int i = 0; i < NUM_RAYS; i++) {
+		/* ... */
+	}
 	SDL_RenderPresent(renderer);
 }
 
