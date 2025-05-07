@@ -3,6 +3,21 @@
 #define WIDTH 640
 #define HEIGHT 480
 
+SDL_Renderer *renderer;
+
+void draw() {
+	SDL_SetRenderDrawColor(
+		renderer,
+		255,
+		255,
+		255,
+		SDL_ALPHA_OPAQUE
+	);
+	/* SDL_RenderClear(renderer); */
+	SDL_RenderDrawPoint(renderer, WIDTH / 2, HEIGHT / 2);
+	SDL_RenderPresent(renderer);
+}
+
 int main() {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Window *window = SDL_CreateWindow(
@@ -13,14 +28,15 @@ int main() {
 		HEIGHT,
 		SDL_WINDOW_SHOWN
 	);
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+	renderer = SDL_CreateRenderer(window, -1, 0);
 
-	SDL_Event e;
+	SDL_Event event;
 	while (1) {
-		SDL_PollEvent(&e);
-		if (e.type == SDL_QUIT) {
+		SDL_PollEvent(&event);
+		if (event.type == SDL_QUIT) {
 			break;
 		}
+		draw();
 	}
 
 	SDL_DestroyRenderer(renderer);
