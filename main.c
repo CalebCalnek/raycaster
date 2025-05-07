@@ -6,6 +6,11 @@
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+typedef struct {
+	double x, y;
+	double angle;
+} player_t;
+
 void init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = SDL_CreateWindow(
