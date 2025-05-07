@@ -2,6 +2,8 @@
 
 #define WIDTH 640
 #define HEIGHT 480
+#define MAP_WIDTH 10
+#define MAP_HEIGHT 10
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -10,6 +12,19 @@ typedef struct {
 	double x, y;
 	double angle;
 } player_t;
+
+int map[MAP_WIDTH][MAP_HEIGHT] = {
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+};
 
 void init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
