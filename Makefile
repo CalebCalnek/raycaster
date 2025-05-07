@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -g -I.
-LDFLAGS = `sdl2-config --cflags --libs`
+LDFLAGS = -lm `sdl2-config --cflags --libs`
 
 .PHONY: all clean
 

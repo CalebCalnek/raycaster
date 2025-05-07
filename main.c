@@ -1,17 +1,19 @@
 #include <SDL2/SDL.h>
+#include <math.h>
 
 #define WIDTH 640
 #define HEIGHT 480
 #define MAP_WIDTH 10
 #define MAP_HEIGHT 10
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-
 typedef struct {
 	double x, y;
 	double angle;
 } player_t;
+
+SDL_Window *window;
+SDL_Renderer *renderer;
+player_t *player;
 
 int map[MAP_WIDTH][MAP_HEIGHT] = {
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -37,9 +39,12 @@ void init() {
 		SDL_WINDOW_SHOWN
 	);
 	renderer = SDL_CreateRenderer(window, -1, 0);
-}
 
-void draw() {
+	player = (player_t *) malloc(sizeof(player_t));
+	player->x = WIDTH / 2;
+	player->y = HEIGHT / 2;
+	player->angle = 0;
+
 	SDL_SetRenderDrawColor(
 		renderer,
 		255,
@@ -47,12 +52,16 @@ void draw() {
 		255,
 		SDL_ALPHA_OPAQUE
 	);
+}
+
+void draw() {
 	/* SDL_RenderClear(renderer); */
 	SDL_RenderDrawPoint(renderer, WIDTH / 2, HEIGHT / 2);
 	SDL_RenderPresent(renderer);
 }
 
 void terminate() {
+	free(player);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
