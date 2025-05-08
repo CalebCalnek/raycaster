@@ -7,7 +7,6 @@
 #define MAP_HEIGHT 10
 #define TILE_SIZE 32
 #define FOV 60
-#define NUM_RAYS 512
 
 #define DEG_TO_RAD(theta) ((theta) * (M_PI / 180.0))
 #define RAD_TO_DEG(theta) ((theta) * (180.0 / M_PI))
@@ -60,6 +59,44 @@ void init() {
 		255,
 		SDL_ALPHA_OPAQUE
 	);
+}
+
+void cast_ray(double ray_angle) {
+	double ray_length = 0;
+	double ray_x = 0;
+	double ray_y = 0;
+	double ray_dx, ray_dy;
+	double ray_radius_dx, ray_radius_dy;
+
+	// grid offsets
+	if (ray_angle < 180) {
+		// pointing up
+		ray_dy = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+	} else if (ray_angle > 180) {
+		// pointing down
+		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
+	} if (ray_angle < 90 || ray_angle >= 270) {
+		// pointing right
+		ray_dx = TILE_SIZE - (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+	} else if (ray_angle >= 90 && ray_angle < 270) {
+		// pointing left
+		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+	}
+
+	/*
+	ray_radius_dx = ;
+	while (1) {
+		if (ray_dx < ray_dy) {
+			ray_x += ray_dx;
+			ray_y += ray_dy;
+			ray_dx = TILE_SIZE;
+		} else if (ray_dx > ray_dy) {
+			//
+		} else {
+			//
+		}
+	}
+	*/
 }
 
 void draw_2d_map() {
