@@ -63,8 +63,6 @@ void init() {
 
 void cast_ray(double ray_angle) {
 	double ray_length = 0;
-	double ray_x = 0;
-	double ray_y = 0;
 	double ray_dx, ray_dy;
 	double ray_radius_dx, ray_radius_dy;
 
@@ -83,20 +81,19 @@ void cast_ray(double ray_angle) {
 		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
 	}
 
-	/*
-	ray_radius_dx = ;
 	while (1) {
-		if (ray_dx < ray_dy) {
-			ray_x += ray_dx;
-			ray_y += ray_dy;
+		ray_radius_dx = ray_dx / cos(ray_angle);
+		ray_radius_dy = ray_dy / sin(ray_angle);
+		if (ray_radius_dx <= ray_radius_dy) {
+			ray_length += ray_radius_dx;
+			ray_dy -= ray_dx / tan(ray_angle);
 			ray_dx = TILE_SIZE;
-		} else if (ray_dx > ray_dy) {
-			//
-		} else {
-			//
+		} else if (ray_radius_dx > ray_radius_dy) {
+			ray_length += ray_radius_dy;
+			ray_dx -= ray_dy * tan(ray_angle);
+			ray_dy = TILE_SIZE;
 		}
 	}
-	*/
 }
 
 void draw_2d_map() {
