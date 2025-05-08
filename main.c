@@ -69,8 +69,8 @@ void cast_ray(double ray_angle) {
 	// grid offsets
 	if (ray_angle < 180) {
 		// pointing up
-		ray_dy = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
-	} else if (ray_angle > 180) {
+		ray_dy = (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
+	} else if (ray_angle >= 180) {
 		// pointing down
 		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
 	} if (ray_angle < 90 || ray_angle >= 270) {
@@ -81,19 +81,45 @@ void cast_ray(double ray_angle) {
 		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
 	}
 
-	while (1) {
+	double ray_x = WIN_TO_WORLD_X(player->x);
+	double ray_y = WIN_TO_WORLD_Y(player->y);
+	int i;
+	int x_index, y_index;
+	for (i = 0; i < 8; i++) {
+		x_index = ray_x / TILE_SIZE;
+		y_index = ray_y / TILE_SIZE;
+		if (x_index < 0 || x_index >= MAP_WIDTH || y_index < 0 || y_index >= MAP_HEIGHT) {
+			return;
+		}
+		if (map[(int) (y_index)][(int) (x_index)] == 1) {
+			break;
+		}
 		ray_radius_dx = ray_dx / cos(ray_angle);
 		ray_radius_dy = ray_dy / sin(ray_angle);
 		if (ray_radius_dx <= ray_radius_dy) {
 			ray_length += ray_radius_dx;
+			ray_x += ray_dx;
+			ray_y += ray_dy;
 			ray_dy -= ray_dx / tan(ray_angle);
 			ray_dx = TILE_SIZE;
 		} else if (ray_radius_dx > ray_radius_dy) {
 			ray_length += ray_radius_dy;
+			ray_x += ray_dx;
+			ray_y += ray_dy;
 			ray_dx -= ray_dy * tan(ray_angle);
 			ray_dy = TILE_SIZE;
 		}
 	}
+
+	if (ray_length < 1) ray_length = 1;
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(
+		renderer,
+		WIN_TO_WORLD_X(player->x),
+		WIN_TO_WORLD_Y(player->y),
+		WIN_TO_WORLD_X(player->x) + (ray_length * cos(ray_angle)),
+		WIN_TO_WORLD_Y(player->y) + (ray_length * sin(ray_angle))
+	);
 }
 
 void draw_2d_map() {
@@ -152,8 +178,9 @@ void draw() {
 
 	draw_2d_map();
 	draw_player();
-	draw_rays(player->angle * M_PI / 180);
-	for (int i = 0; i < NUM_RAYS; i++) {
+	// draw_rays(player->angle * M_PI / 180);
+	cast_ray(player->angle * M_PI / 180);
+	for (int i = 0; i < WIDTH; i++) {
 		/* ... */
 	}
 	SDL_RenderPresent(renderer);
@@ -185,10 +212,14 @@ int main() {
 					player->y -= 4 * sin(DEG_TO_RAD(player->angle));
 					break;
 				case SDLK_LEFT:
-					player->angle = (int) (player->angle - 5) % 360;
+					player->angle = player->angle - 5;
+					if (player->angle >= 360) player->angle -= 360;
+					if (player->angle < 0) player->angle += 360;
 					break;
 				case SDLK_RIGHT:
-					player->angle = (int) (player->angle + 5) % 360;
+					player->angle = player->angle + 5;
+					if (player->angle >= 360) player->angle -= 360;
+					if (player->angle < 0) player->angle += 360;
 					break;
 			}
 		}
