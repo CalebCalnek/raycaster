@@ -70,7 +70,8 @@ void draw_2d_map() {
 			} else {
 				SDL_SetRenderDrawColor(renderer, 255, 0, 255, SDL_ALPHA_OPAQUE);
 			}
-			SDL_RenderDrawPoint(renderer, x * TILE_SIZE, y * TILE_SIZE);
+			SDL_Rect tile = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+			SDL_RenderFillRect(renderer, &tile);
 		}
 	}
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
