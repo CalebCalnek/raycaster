@@ -9,6 +9,11 @@
 #define FOV 60
 #define NUM_RAYS 512
 
+#define DEG_TO_RAD(theta) ((theta) * (M_PI / 180.0))
+#define RAD_TO_DEG(theta) ((theta) * (180.0 / M_PI))
+#define WIN_TO_WORLD_X(X) ((X) / WIDTH * TILE_SIZE * MAP_WIDTH)
+#define WIN_TO_WORLD_Y(Y) ((Y) / HEIGHT * TILE_SIZE * MAP_HEIGHT)
+
 typedef struct {
 	double x, y;
 	double angle;
@@ -69,11 +74,25 @@ void draw_2d_map() {
 		}
 	}
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawPoint(renderer, player->x / WIDTH * TILE_SIZE * MAP_WIDTH, player->y / HEIGHT * TILE_SIZE * MAP_HEIGHT);
+	SDL_RenderDrawPoint(renderer, WIN_TO_WORLD_X(player->x), WIN_TO_WORLD_Y(player->y));
+}
+
+void draw_rays(double ray_angle) {
+	SDL_RenderDrawLine(
+		renderer,
+		WIN_TO_WORLD_X(player->x),
+		WIN_TO_WORLD_Y(player->y),
+		WIN_TO_WORLD_X(player->x + (16 * cos(ray_angle))),
+		WIN_TO_WORLD_Y(player->y + (16 * sin(ray_angle)))
+	);
 }
 
 void draw() {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+
 	draw_2d_map();
+	draw_rays(player->angle * M_PI / 180);
 	for (int i = 0; i < NUM_RAYS; i++) {
 		/* ... */
 	}
@@ -95,6 +114,23 @@ int main() {
 		SDL_PollEvent(&event);
 		if (event.type == SDL_QUIT) {
 			break;
+		} else if (event.type == SDL_KEYDOWN) {
+			switch (event.key.keysym.sym) {
+				case SDLK_UP:
+					player->x += 4 * cos(DEG_TO_RAD(player->angle));
+					player->y += 4 * sin(DEG_TO_RAD(player->angle));
+					break;
+				case SDLK_DOWN:
+					player->x -= 4 * cos(DEG_TO_RAD(player->angle));
+					player->y -= 4 * sin(DEG_TO_RAD(player->angle));
+					break;
+				case SDLK_LEFT:
+					player->angle = (int) (player->angle - 5) % 360;
+					break;
+				case SDLK_RIGHT:
+					player->angle = (int) (player->angle + 5) % 360;
+					break;
+			}
 		}
 		draw();
 	}
