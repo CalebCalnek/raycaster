@@ -63,8 +63,11 @@ void init() {
 }
 
 void draw_2d_map() {
-	for (int y = 0; y < MAP_HEIGHT; y++) {
-		for (int x = 0; x < MAP_WIDTH; x++) {
+	int x, y, i;
+
+	// draw tiles
+	for (y = 0; y < MAP_HEIGHT; y++) {
+		for (x = 0; x < MAP_WIDTH; x++) {
 			if (map[y][x] == 1) {
 				SDL_SetRenderDrawColor(renderer, 0, 255, 255, SDL_ALPHA_OPAQUE);
 			} else {
@@ -74,17 +77,38 @@ void draw_2d_map() {
 			SDL_RenderFillRect(renderer, &tile);
 		}
 	}
+
+	// draw grid
+	SDL_SetRenderDrawColor(renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);
+	for (i = 0; i <= MAP_WIDTH; i++) {
+		SDL_RenderDrawLine(renderer, i * TILE_SIZE, 0, i * TILE_SIZE, MAP_HEIGHT * TILE_SIZE);
+	}
+	for (i = 0; i <= MAP_HEIGHT; i++) {
+		SDL_RenderDrawLine(renderer, 0, i * TILE_SIZE, MAP_WIDTH * TILE_SIZE, i * TILE_SIZE);
+	}
+}
+
+void draw_player() {
+	int player_radius = 4;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawPoint(renderer, WIN_TO_WORLD_X(player->x), WIN_TO_WORLD_Y(player->y));
+	SDL_Rect player_rect = {
+		WIN_TO_WORLD_X(player->x) - player_radius / 2,
+		WIN_TO_WORLD_Y(player->y) - player_radius / 2,
+		player_radius,
+		player_radius
+	};
+	SDL_RenderFillRect(renderer, &player_rect);
 }
 
 void draw_rays(double ray_angle) {
+	int length = 512;
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(
 		renderer,
 		WIN_TO_WORLD_X(player->x),
 		WIN_TO_WORLD_Y(player->y),
-		WIN_TO_WORLD_X(player->x + (16 * cos(ray_angle))),
-		WIN_TO_WORLD_Y(player->y + (16 * sin(ray_angle)))
+		WIN_TO_WORLD_X(player->x + (length * cos(ray_angle))),
+		WIN_TO_WORLD_Y(player->y + (length * sin(ray_angle)))
 	);
 }
 
@@ -93,6 +117,7 @@ void draw() {
 	SDL_RenderClear(renderer);
 
 	draw_2d_map();
+	draw_player();
 	draw_rays(player->angle * M_PI / 180);
 	for (int i = 0; i < NUM_RAYS; i++) {
 		/* ... */
