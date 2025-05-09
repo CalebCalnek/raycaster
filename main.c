@@ -120,7 +120,7 @@ void cast_ray(double ray_angle) {
 		WIN_TO_WORLD_X(player->x),
 		WIN_TO_WORLD_Y(player->y),
 		WIN_TO_WORLD_X(player->x) + (ray_length * cos(ray_angle)),
-		WIN_TO_WORLD_Y(player->y) + (ray_length * sin(ray_angle))
+		WIN_TO_WORLD_Y(player->y) - (ray_length * sin(ray_angle))
 	);
 }
 
@@ -207,23 +207,21 @@ int main() {
 			switch (event.key.keysym.sym) {
 				case SDLK_UP:
 					player->x += 4 * cos(DEG_TO_RAD(player->angle));
-					player->y += 4 * sin(DEG_TO_RAD(player->angle));
+					player->y -= 4 * sin(DEG_TO_RAD(player->angle));
 					break;
 				case SDLK_DOWN:
 					player->x -= 4 * cos(DEG_TO_RAD(player->angle));
-					player->y -= 4 * sin(DEG_TO_RAD(player->angle));
+					player->y += 4 * sin(DEG_TO_RAD(player->angle));
 					break;
 				case SDLK_LEFT:
-					player->angle = player->angle - 5;
-					if (player->angle >= 360) player->angle -= 360;
-					if (player->angle < 0) player->angle += 360;
+					player->angle += 5;
 					break;
 				case SDLK_RIGHT:
-					player->angle = player->angle + 5;
-					if (player->angle >= 360) player->angle -= 360;
-					if (player->angle < 0) player->angle += 360;
+					player->angle -= 5;
 					break;
 			}
+			if (player->angle >= 360) player->angle -= 360;
+			else if (player->angle < 0) player->angle += 360;
 		}
 		draw();
 	}
