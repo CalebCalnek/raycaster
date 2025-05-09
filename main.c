@@ -83,17 +83,17 @@ void cast_ray(double ray_angle) {
 
 	double ray_x = WIN_TO_WORLD_X(player->x);
 	double ray_y = WIN_TO_WORLD_Y(player->y);
-	int x_index, y_index;
+	int x_tile, y_tile;
 
 	for (int i = 0; i < 8; i++) {
-		x_index = (int) (ray_x / TILE_SIZE);
-		y_index = (int) (ray_y / TILE_SIZE);
+		x_tile = (int) (ray_x / TILE_SIZE);
+		y_tile = (int) (ray_y / TILE_SIZE);
 
-		if (x_index < 0 || x_index >= MAP_WIDTH || y_index < 0 || y_index >= MAP_HEIGHT) {
+		if (x_tile < 0 || x_tile >= MAP_WIDTH || y_tile < 0 || y_tile >= MAP_HEIGHT) {
 			return;
 		}
 
-		if (map[y_index][x_index] == 1) {
+		if (map[y_tile][x_tile] == 1) {
 			break;
 		}
 
@@ -102,14 +102,14 @@ void cast_ray(double ray_angle) {
 		if (ray_radius_dx <= ray_radius_dy) {
 			ray_length += ray_radius_dx;
 			ray_x += ray_dx;
-			ray_y += ray_dy;
-			ray_dy -= ray_dx / tan(ray_angle);
+			ray_y += ray_dx * tan(ray_angle);
+			ray_dy -= ray_dx * tan(ray_angle);
 			ray_dx = TILE_SIZE;
 		} else if (ray_radius_dx > ray_radius_dy) {
 			ray_length += ray_radius_dy;
-			ray_x += ray_dx;
+			ray_x += ray_dy / tan(ray_angle);
 			ray_y += ray_dy;
-			ray_dx -= ray_dy * tan(ray_angle);
+			ray_dx -= ray_dy / tan(ray_angle);
 			ray_dy = TILE_SIZE;
 		}
 	}
