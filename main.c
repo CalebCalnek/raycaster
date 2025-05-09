@@ -97,8 +97,8 @@ void cast_ray(double ray_angle) {
 			break;
 		}
 
-		ray_radius_dx = ray_dx / cos(ray_angle);
-		ray_radius_dy = ray_dy / sin(ray_angle);
+		ray_radius_dx = fabs(ray_dx / cos(ray_angle));
+		ray_radius_dy = fabs(ray_dy / sin(ray_angle));
 		if (ray_radius_dx <= ray_radius_dy) {
 			ray_length += ray_radius_dx;
 			ray_x += ray_dx;
@@ -114,7 +114,6 @@ void cast_ray(double ray_angle) {
 		}
 	}
 
-	if (ray_angle == M_PI * 3/2) ray_length = 1;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(
 		renderer,
