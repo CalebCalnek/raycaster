@@ -67,33 +67,36 @@ void cast_ray(double ray_angle) {
 	double ray_radius_dx, ray_radius_dy;
 
 	// grid offsets
-	if (ray_angle < 180) {
+	if (ray_angle < M_PI) {
 		// pointing up
 		ray_dy = (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
-	} else if (ray_angle >= 180) {
+	} else if (ray_angle >= M_PI) {
 		// pointing down
 		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
-	} if (ray_angle < 90 || ray_angle >= 270) {
+	} if (ray_angle < M_PI / 2 || ray_angle >= 3/2 * M_PI) {
 		// pointing right
 		ray_dx = TILE_SIZE - (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
-	} else if (ray_angle >= 90 && ray_angle < 270) {
+	} else if (ray_angle >= M_PI / 2 && ray_angle < 3/2 * M_PI) {
 		// pointing left
 		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
 	}
 
 	double ray_x = WIN_TO_WORLD_X(player->x);
 	double ray_y = WIN_TO_WORLD_Y(player->y);
-	int i;
 	int x_index, y_index;
-	for (i = 0; i < 8; i++) {
-		x_index = ray_x / TILE_SIZE;
-		y_index = ray_y / TILE_SIZE;
+
+	for (int i = 0; i < 8; i++) {
+		x_index = (int) (ray_x / TILE_SIZE);
+		y_index = (int) (ray_y / TILE_SIZE);
+
 		if (x_index < 0 || x_index >= MAP_WIDTH || y_index < 0 || y_index >= MAP_HEIGHT) {
 			return;
 		}
-		if (map[(int) (y_index)][(int) (x_index)] == 1) {
+
+		if (map[y_index][x_index] == 1) {
 			break;
 		}
+
 		ray_radius_dx = ray_dx / cos(ray_angle);
 		ray_radius_dy = ray_dy / sin(ray_angle);
 		if (ray_radius_dx <= ray_radius_dy) {
@@ -111,7 +114,7 @@ void cast_ray(double ray_angle) {
 		}
 	}
 
-	if (ray_length < 1) ray_length = 1;
+	if (ray_angle == M_PI * 3/2) ray_length = 1;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(
 		renderer,
