@@ -61,7 +61,31 @@ void init() {
 	);
 }
 
-void cast_ray(double ray_angle) {
+void draw_ray(double ray_angle, double ray_length) {
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(
+		renderer,
+		WIN_TO_WORLD_X(player->x),
+		WIN_TO_WORLD_Y(player->y),
+		WIN_TO_WORLD_X(player->x) + (ray_length * cos(ray_angle)),
+		WIN_TO_WORLD_Y(player->y) - (ray_length * sin(ray_angle))
+	);
+}
+
+void draw_segment(double ray_length, int ray_index) {
+	int ray_width = WIDTH / FOV;
+	int ray_height = HEIGHT - ray_length;
+	SDL_Rect segment = {
+		WIN_TO_WORLD_X(WIDTH) + (FOV - ray_index) * ray_width,
+		(HEIGHT - ray_height) / 2,
+		ray_width,
+		ray_height
+	};
+	SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+	SDL_RenderFillRect(renderer, &segment);
+}
+
+void cast_ray(double ray_angle, int ray_index) {
 	double ray_length = 0;
 	double ray_dx, ray_dy;
 	double ray_radius_dx, ray_radius_dy;
@@ -129,14 +153,8 @@ void cast_ray(double ray_angle) {
 		}
 	}
 
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawLine(
-		renderer,
-		WIN_TO_WORLD_X(player->x),
-		WIN_TO_WORLD_Y(player->y),
-		WIN_TO_WORLD_X(player->x) + (ray_length * cos(ray_angle)),
-		WIN_TO_WORLD_Y(player->y) - (ray_length * sin(ray_angle))
-	);
+	draw_ray(ray_angle, ray_length);
+	draw_segment(ray_length, ray_index);
 }
 
 void draw_2d_map() {
@@ -184,7 +202,7 @@ void draw() {
 	draw_2d_map();
 	draw_player();
 	for (int i = 0; i < FOV; i++) {
-		cast_ray((player->angle - FOV / 2 + i) * M_PI / 180);
+		cast_ray((player->angle - FOV / 2 + i) * M_PI / 180, i);
 	}
 
 	SDL_RenderPresent(renderer);
