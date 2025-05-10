@@ -65,21 +65,23 @@ void cast_ray(double ray_angle) {
 	double ray_length = 0;
 	double ray_dx, ray_dy;
 	double ray_radius_dx, ray_radius_dy;
-	int dir_x;
+	int dir_x, dir_y;
 
 	// grid offsets
 	if (ray_angle < M_PI) {
 		// pointing up
 		ray_dy = (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
 		if (ray_dy == 0) ray_dy = TILE_SIZE;
+		dir_y = -1;
 	} else if (ray_angle >= M_PI) {
 		// pointing down
 		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
-	} if (ray_angle < M_PI / 2 || ray_angle >= 3/2 * M_PI) {
+		dir_y = 1;
+	} if (ray_angle < M_PI / 2 || ray_angle >= M_PI * 3/2) {
 		// pointing right
 		ray_dx = TILE_SIZE - (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
 		dir_x = 1;
-	} else if (ray_angle >= M_PI / 2 && ray_angle < 3/2 * M_PI) {
+	} else if (ray_angle >= M_PI / 2 && ray_angle < M_PI * 3/2) {
 		// pointing left
 		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
 		if (ray_dx == 0) ray_dx = TILE_SIZE;
@@ -91,8 +93,16 @@ void cast_ray(double ray_angle) {
 	int x_tile, y_tile;
 
 	for (int i = 0; i < 8; i++) {
-		x_tile = (int) (ray_x / TILE_SIZE);
-		y_tile = (int) (ray_y / TILE_SIZE);
+		if (dir_x == 1) {
+			x_tile = (int) (ray_x / TILE_SIZE);
+		} else {
+			x_tile = (int) ((ray_x - 1) / TILE_SIZE);
+		}
+		if (dir_y == 1) {
+			y_tile = (int) (ray_y / TILE_SIZE);
+		} else {
+			y_tile = (int) ((ray_y - 1) / TILE_SIZE);
+		}
 
 		if (x_tile < 0 || x_tile >= MAP_WIDTH || y_tile < 0 || y_tile >= MAP_HEIGHT) {
 			return;
@@ -106,14 +116,14 @@ void cast_ray(double ray_angle) {
 		ray_radius_dy = fabs(ray_dy / sin(ray_angle));
 		if (ray_radius_dx <= ray_radius_dy) {
 			ray_length += ray_radius_dx;
-			ray_x += ray_dx;
-			ray_y += fabs(ray_dx * tan(ray_angle)) * dir_x;
+			ray_x += ray_dx * dir_x;
+			ray_y += fabs(ray_dx * tan(ray_angle)) * dir_y;
 			ray_dy -= fabs(ray_dx * tan(ray_angle));
 			ray_dx = TILE_SIZE;
 		} else if (ray_radius_dx > ray_radius_dy) {
 			ray_length += ray_radius_dy;
 			ray_x += fabs(ray_dy / tan(ray_angle)) * dir_x;
-			ray_y += ray_dy;
+			ray_y += ray_dy * dir_y;
 			ray_dx -= fabs(ray_dy / tan(ray_angle));
 			ray_dy = TILE_SIZE;
 		}
