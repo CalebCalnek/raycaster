@@ -92,7 +92,7 @@ void cast_ray(double ray_angle) {
 	double ray_y = WIN_TO_WORLD_Y(player->y);
 	int x_tile, y_tile;
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 16; i++) {
 		if (dir_x == 1) {
 			x_tile = (int) (ray_x / TILE_SIZE);
 		} else {
@@ -177,29 +177,16 @@ void draw_player() {
 	SDL_RenderFillRect(renderer, &player_rect);
 }
 
-void draw_rays(double ray_angle) {
-	int length = 512;
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawLine(
-		renderer,
-		WIN_TO_WORLD_X(player->x),
-		WIN_TO_WORLD_Y(player->y),
-		WIN_TO_WORLD_X(player->x + (length * cos(ray_angle))),
-		WIN_TO_WORLD_Y(player->y + (length * sin(ray_angle)))
-	);
-}
-
 void draw() {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
 	draw_2d_map();
 	draw_player();
-	// draw_rays(player->angle * M_PI / 180);
-	cast_ray(player->angle * M_PI / 180);
-	for (int i = 0; i < WIDTH; i++) {
-		/* ... */
+	for (int i = 0; i < FOV; i++) {
+		cast_ray((player->angle - FOV / 2 + i) * M_PI / 180);
 	}
+
 	SDL_RenderPresent(renderer);
 }
 
