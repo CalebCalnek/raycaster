@@ -82,7 +82,7 @@ void draw_segment(double ray_length, int ray_index, double ray_angle) {
 		ray_width,
 		ray_height
 	};
-	SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+	// SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
 	SDL_RenderFillRect(renderer, &segment);
 }
 
@@ -116,6 +116,7 @@ void cast_ray(double ray_angle, int ray_index) {
 	double ray_x = WIN_TO_WORLD_X(player->x);
 	double ray_y = WIN_TO_WORLD_Y(player->y);
 	int x_tile, y_tile;
+	int is_vertical_hit;
 
 	for (int i = 0; i < 16; i++) {
 		if (dir_x == 1) {
@@ -145,16 +146,23 @@ void cast_ray(double ray_angle, int ray_index) {
 			ray_y += fabs(ray_dx * tan(ray_angle)) * dir_y;
 			ray_dy -= fabs(ray_dx * tan(ray_angle));
 			ray_dx = TILE_SIZE;
+			is_vertical_hit = 0;
 		} else if (ray_radius_dx > ray_radius_dy) {
 			ray_length += ray_radius_dy;
 			ray_x += fabs(ray_dy / tan(ray_angle)) * dir_x;
 			ray_y += ray_dy * dir_y;
 			ray_dx -= fabs(ray_dy / tan(ray_angle));
 			ray_dy = TILE_SIZE;
+			is_vertical_hit = 1;
 		}
 	}
 
 	draw_ray(ray_angle, ray_length);
+	if (is_vertical_hit) {
+		SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+	} else {
+		SDL_SetRenderDrawColor(renderer, 0, 128, 128, 255);
+	}
 	draw_segment(ray_length, ray_index, ray_angle);
 }
 
