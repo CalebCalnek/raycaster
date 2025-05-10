@@ -74,7 +74,8 @@ void draw_ray(double ray_angle, double ray_length) {
 
 void draw_segment(double ray_length, int ray_index) {
 	int ray_width = WIDTH / FOV;
-	int ray_height = HEIGHT - ray_length;
+	int ray_height = TILE_SIZE * HEIGHT / ray_length;
+	if (ray_height > HEIGHT) ray_height = HEIGHT;
 	SDL_Rect segment = {
 		WIN_TO_WORLD_X(WIDTH) + (FOV - ray_index) * ray_width,
 		(HEIGHT - ray_height) / 2,
