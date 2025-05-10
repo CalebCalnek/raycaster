@@ -72,9 +72,9 @@ void draw_ray(double ray_angle, double ray_length) {
 	);
 }
 
-void draw_segment(double ray_length, int ray_index) {
+void draw_segment(double ray_length, int ray_index, double ray_angle) {
 	int ray_width = WIDTH / FOV;
-	int ray_height = TILE_SIZE * HEIGHT / ray_length;
+	int ray_height = TILE_SIZE * HEIGHT / (ray_length * cos(ray_angle - DEG_TO_RAD(player->angle)));
 	if (ray_height > HEIGHT) ray_height = HEIGHT;
 	SDL_Rect segment = {
 		WIN_TO_WORLD_X(WIDTH) + (FOV - ray_index) * ray_width,
@@ -155,7 +155,7 @@ void cast_ray(double ray_angle, int ray_index) {
 	}
 
 	draw_ray(ray_angle, ray_length);
-	draw_segment(ray_length, ray_index);
+	draw_segment(ray_length, ray_index, ray_angle);
 }
 
 void draw_2d_map() {
