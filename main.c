@@ -65,20 +65,25 @@ void cast_ray(double ray_angle) {
 	double ray_length = 0;
 	double ray_dx, ray_dy;
 	double ray_radius_dx, ray_radius_dy;
+	int dir_x;
 
 	// grid offsets
 	if (ray_angle < M_PI) {
 		// pointing up
 		ray_dy = (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
+		if (ray_dy == 0) ray_dy = TILE_SIZE;
 	} else if (ray_angle >= M_PI) {
 		// pointing down
 		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
 	} if (ray_angle < M_PI / 2 || ray_angle >= 3/2 * M_PI) {
 		// pointing right
 		ray_dx = TILE_SIZE - (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+		dir_x = 1;
 	} else if (ray_angle >= M_PI / 2 && ray_angle < 3/2 * M_PI) {
 		// pointing left
 		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+		if (ray_dx == 0) ray_dx = TILE_SIZE;
+		dir_x = -1;
 	}
 
 	double ray_x = WIN_TO_WORLD_X(player->x);
@@ -102,14 +107,14 @@ void cast_ray(double ray_angle) {
 		if (ray_radius_dx <= ray_radius_dy) {
 			ray_length += ray_radius_dx;
 			ray_x += ray_dx;
-			ray_y += ray_dx * tan(ray_angle);
-			ray_dy -= ray_dx * tan(ray_angle);
+			ray_y += fabs(ray_dx * tan(ray_angle)) * dir_x;
+			ray_dy -= fabs(ray_dx * tan(ray_angle));
 			ray_dx = TILE_SIZE;
 		} else if (ray_radius_dx > ray_radius_dy) {
 			ray_length += ray_radius_dy;
-			ray_x += ray_dy / tan(ray_angle);
+			ray_x += fabs(ray_dy / tan(ray_angle)) * dir_x;
 			ray_y += ray_dy;
-			ray_dx -= ray_dy / tan(ray_angle);
+			ray_dx -= fabs(ray_dy / tan(ray_angle));
 			ray_dy = TILE_SIZE;
 		}
 	}
