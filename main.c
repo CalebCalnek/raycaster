@@ -217,6 +217,27 @@ void draw() {
 	SDL_RenderPresent(renderer);
 }
 
+void move_player(int dir_x, int dir_y) {
+	double player_dx = 4 * cos(DEG_TO_RAD(player->angle)) * dir_x;
+	double player_dy = 4 * sin(DEG_TO_RAD(player->angle)) * dir_y;
+
+	if (!map[
+		(int) WIN_TO_WORLD_Y(player->y) / TILE_SIZE
+	][
+		(int) (WIN_TO_WORLD_X(player->x) + player_dx) / TILE_SIZE
+	]) {
+		player->x += player_dx;
+	}
+
+	if (!map[
+		(int) (WIN_TO_WORLD_Y(player->y) + player_dy) / TILE_SIZE
+	][
+		(int) WIN_TO_WORLD_X(player->x) / TILE_SIZE
+	]) {
+		player->y += player_dy;
+	}
+}
+
 void terminate() {
 	free(player);
 	SDL_DestroyRenderer(renderer);
@@ -235,12 +256,10 @@ int main() {
 		} else if (event.type == SDL_KEYDOWN) {
 			switch (event.key.keysym.sym) {
 				case SDLK_UP:
-					player->x += 4 * cos(DEG_TO_RAD(player->angle));
-					player->y -= 4 * sin(DEG_TO_RAD(player->angle));
+					move_player(1, -1);
 					break;
 				case SDLK_DOWN:
-					player->x -= 4 * cos(DEG_TO_RAD(player->angle));
-					player->y += 4 * sin(DEG_TO_RAD(player->angle));
+					move_player(-1, 1);
 					break;
 				case SDLK_LEFT:
 					player->angle += 5;
