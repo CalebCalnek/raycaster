@@ -61,6 +61,16 @@ void init() {
 	);
 }
 
+int normalize_angle(int angle) {
+	if (angle >= 360) {
+		return angle - 360;
+	} else if (angle < 0) {
+		return angle + 360;
+	} else {
+		return angle;
+	}
+}
+
 void draw_ray(double ray_angle, double ray_length) {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(
@@ -211,7 +221,7 @@ void draw() {
 	draw_2d_map();
 	draw_player();
 	for (int i = 0; i < FOV; i++) {
-		cast_ray((player->angle - FOV / 2 + i) * M_PI / 180, i);
+		cast_ray(DEG_TO_RAD(normalize_angle(player->angle - FOV / 2 + i)), i);
 	}
 
 	SDL_RenderPresent(renderer);
@@ -268,8 +278,7 @@ int main() {
 					player->angle -= 5;
 					break;
 			}
-			if (player->angle >= 360) player->angle -= 360;
-			else if (player->angle < 0) player->angle += 360;
+			player->angle = normalize_angle(player->angle);
 		}
 		draw();
 	}
