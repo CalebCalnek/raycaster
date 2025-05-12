@@ -48,8 +48,8 @@ void init() {
 	renderer = SDL_CreateRenderer(window, -1, 0);
 
 	player = (player_t *) malloc(sizeof(player_t));
-	player->x = WIDTH / 2;
-	player->y = HEIGHT / 2;
+	player->x = WIN_TO_WORLD_X(WIDTH) / 2;
+	player->y = WIN_TO_WORLD_Y(HEIGHT) / 2;
 	player->angle = 0;
 
 	SDL_SetRenderDrawColor(
@@ -65,10 +65,10 @@ void draw_ray(double ray_angle, double ray_length) {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderDrawLine(
 		renderer,
-		WIN_TO_WORLD_X(player->x),
-		WIN_TO_WORLD_Y(player->y),
-		WIN_TO_WORLD_X(player->x) + (ray_length * cos(ray_angle)),
-		WIN_TO_WORLD_Y(player->y) - (ray_length * sin(ray_angle))
+		player->x,
+		player->y,
+		player->x + (ray_length * cos(ray_angle)),
+		player->y - (ray_length * sin(ray_angle))
 	);
 }
 
@@ -95,26 +95,26 @@ void cast_ray(double ray_angle, int ray_index) {
 	// grid offsets
 	if (ray_angle < M_PI) {
 		// pointing up
-		ray_dy = (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
+		ray_dy = (int) player->y % TILE_SIZE;
 		if (ray_dy == 0) ray_dy = TILE_SIZE;
 		dir_y = -1;
 	} else if (ray_angle >= M_PI) {
 		// pointing down
-		ray_dy = TILE_SIZE - (int) WIN_TO_WORLD_Y(player->y) % TILE_SIZE;
+		ray_dy = TILE_SIZE - (int) player->y % TILE_SIZE;
 		dir_y = 1;
 	} if (ray_angle < M_PI / 2 || ray_angle >= M_PI * 3/2) {
 		// pointing right
-		ray_dx = TILE_SIZE - (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+		ray_dx = TILE_SIZE - (int) player->x % TILE_SIZE;
 		dir_x = 1;
 	} else if (ray_angle >= M_PI / 2 && ray_angle < M_PI * 3/2) {
 		// pointing left
-		ray_dx = (int) WIN_TO_WORLD_X(player->x) % TILE_SIZE;
+		ray_dx = (int) player->x % TILE_SIZE;
 		if (ray_dx == 0) ray_dx = TILE_SIZE;
 		dir_x = -1;
 	}
 
-	double ray_x = WIN_TO_WORLD_X(player->x);
-	double ray_y = WIN_TO_WORLD_Y(player->y);
+	double ray_x = player->x;
+	double ray_y = player->y;
 	int x_tile, y_tile;
 	int is_vertical_hit;
 
@@ -196,8 +196,8 @@ void draw_player() {
 	int player_radius = 4;
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_Rect player_rect = {
-		WIN_TO_WORLD_X(player->x) - player_radius / 2,
-		WIN_TO_WORLD_Y(player->y) - player_radius / 2,
+		player->x - player_radius / 2,
+		player->y - player_radius / 2,
 		player_radius,
 		player_radius
 	};
@@ -222,17 +222,17 @@ void move_player(int dir_x, int dir_y) {
 	double player_dy = 4 * sin(DEG_TO_RAD(player->angle)) * dir_y;
 
 	if (!map[
-		(int) WIN_TO_WORLD_Y(player->y) / TILE_SIZE
+		(int) player->y / TILE_SIZE
 	][
-		(int) (WIN_TO_WORLD_X(player->x) + player_dx) / TILE_SIZE
+		(int) (player->x + player_dx) / TILE_SIZE
 	]) {
 		player->x += player_dx;
 	}
 
 	if (!map[
-		(int) (WIN_TO_WORLD_Y(player->y) + player_dy) / TILE_SIZE
+		(int) (player->y + player_dy) / TILE_SIZE
 	][
-		(int) WIN_TO_WORLD_X(player->x) / TILE_SIZE
+		(int) player->x / TILE_SIZE
 	]) {
 		player->y += player_dy;
 	}
