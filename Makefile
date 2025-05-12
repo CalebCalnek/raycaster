@@ -1,13 +1,14 @@
 CC = gcc
 CFLAGS = -Wall -g -I.
 LDFLAGS = -lm `sdl2-config --cflags --libs`
+SRC = $(wildcard src/*.c)
 
 .PHONY: all clean
 
-all: myRaycaster
+all: raycaster
 
 clean:
-	rm -f myRaycaster
+	rm -f raycaster
 
-myRaycaster: main.c
+raycaster: $(SRC)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
